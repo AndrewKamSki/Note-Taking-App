@@ -1,7 +1,11 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const db = require('./db/db.json');
+const {
+  readFromFile,
+  readAndAppend,
+  writeToFile,
+} = require('./helpers/fsUtils');
 const { v4: uuidv4 } = require('uuid');
 
 const PORT = process.env.PORT || 3001;
@@ -30,7 +34,8 @@ app.get('*', (req, res) =>
 
 // GET Route for reading db.json file
 app.get('/api/notes', (req, res) => {
-  res.sendFile(path.join(__dirname, '/db/db.json'))
+  readFromFile('.db/db.json')
+    .then((data) => res.json(JSON.parse(data)))
 });
 
 // POST Route for receiving new note and saving to db.json file
@@ -45,17 +50,7 @@ app.post('/api/notes', (req, res) => {
       id: uuidv4(),
     };
 
-    fs.readFile('./db/db.json', 'utf8', (err, data) => {
-      if (err) {
-        console.error(err);
-      } else {
-        const parsedData = JSON.parse(data);
-        parsedData.push(newNote);
-        fs.writeFile('./db/db.json', JSON.stringify(parsedData, null, 4), (err) =>
-          err ? console.error(err) : console.info(`\nData written to db.json`)
-      );
-      };
-    });
+    readAndAppend(newNote, './db/db.json');
     res.json('New note added successfully');
   } else {
     res.error('Error adding note');
