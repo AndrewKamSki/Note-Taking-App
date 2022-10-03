@@ -31,6 +31,9 @@
 
   All of the routing for this project was done with express!
 
+  ![Typed out note](images/Typed-Note.png)
+  ![Typed note above being saved](images/Saved-Note.png)
+
   ## Contributing
 
   No other contributors were on this project
